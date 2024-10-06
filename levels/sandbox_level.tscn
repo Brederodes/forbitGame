@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cuxx5npi8dny5"]
+
+[ext_resource type="Shape3D" uid="uid://cew4300ctie1a" path="res://assets/terrain/sandbox_ground_shape.tres" id="1_jpqm3"]
+[ext_resource type="Material" uid="uid://sf3gva5kicle" path="res://assets/shaders/unshaded_texture.tres" id="2_j6a8q"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_307up"]
+size = Vector3(200, 1, 200)
+
+[node name="sandbox_level" type="Node3D"]
+
+[node name="world" type="Node3D" parent="."]
+
+[node name="terrain" type="Node3D" parent="world"]
+
+[node name="ground" type="StaticBody3D" parent="world/terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="world/terrain/ground"]
+shape = ExtResource("1_jpqm3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="world/terrain/ground"]
+mesh = SubResource("BoxMesh_307up")
+surface_material_override/0 = ExtResource("2_j6a8q")

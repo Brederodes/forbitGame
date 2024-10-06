@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://sf3gva5kicle"]
+
+[ext_resource type="Shader" path="res://assets/shaders/unshaded_texture.gdshader" id="1_f31ps"]
+[ext_resource type="Texture2D" uid="uid://bsuyapxadt4os" path="res://assets/textures/pure_red_checkers.png" id="2_7jr5o"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_f31ps")
+shader_parameter/UVScale = 200.0
+shader_parameter/albedoGain = Vector3(0, 0, 0.3)
+shader_parameter/sourceImage = ExtResource("2_7jr5o")
