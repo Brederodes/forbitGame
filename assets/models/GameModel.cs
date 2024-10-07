@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 public partial class GameModel : Node
 {
-	[Export] Godot.Collections.Array<AnimationPlayer> animationPlayers;
-	public void PlayNamedAnimation(string animationName)
+	[Export] Godot.Collections.Dictionary<string,AnimationPlayer> animationPlayers;
+
+	public void PlayNamedAnimation(string animatorName, string animationName, float animationSpeed = 1.0f)
 	{
+			animationPlayers[animatorName].Play(animationName, customSpeed: animationSpeed);
 	}
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
