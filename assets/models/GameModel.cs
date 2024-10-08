@@ -2,13 +2,13 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class GameModel : Node
+public partial class GameModel : Node3D
 {
-	[Export] Godot.Collections.Dictionary<string,AnimationPlayer> animationPlayers;
+	[Export] Godot.Collections.Dictionary<string, NodePath> animationPlayers;
 
-	public void PlayNamedAnimation(string animatorName, string animationName, float animationSpeed = 1.0f)
+	public void PlayNamedAnimation(string animatorName, string animationName, float animationSpeed = 1.0f, double blend = 0f)
 	{
-			animationPlayers[animatorName].Play(animationName, customSpeed: animationSpeed);
+		((AnimationPlayer)GetNode(animationPlayers[animatorName])).Play(animationName, customSpeed: animationSpeed, customBlend: blend);
 	}
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

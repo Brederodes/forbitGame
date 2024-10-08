@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdhdctrmrp0ma"
-path="res://.godot/imported/frorbit_body_frobirt.png-859bdc368ec1911182cfe1096cac7750.ctex"
+uid="uid://colow7epdnw6l"
+path="res://.godot/imported/frorbit_body_forbit_high_res.png-eca12377edd1fcc3e1d0257b45abeaaf.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "809920950bcb9e6e38bc2dd30fabc161"
+"md5": "1a6affc2deb7faa7654ed388c86c9a75"
 }
 
 [deps]
 
-source_file="res://assets/models/frorbit_model/frorbit_body_frobirt.png"
-dest_files=["res://.godot/imported/frorbit_body_frobirt.png-859bdc368ec1911182cfe1096cac7750.ctex"]
+source_file="res://assets/models/frorbit_model/frorbit_body_forbit_high_res.png"
+dest_files=["res://.godot/imported/frorbit_body_forbit_high_res.png-eca12377edd1fcc3e1d0257b45abeaaf.ctex"]
 
 [params]
 
