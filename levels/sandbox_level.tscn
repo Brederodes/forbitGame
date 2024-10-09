@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cuxx5npi8dny5"]
+[gd_scene load_steps=12 format=3 uid="uid://cuxx5npi8dny5"]
 
 [ext_resource type="Shape3D" uid="uid://cew4300ctie1a" path="res://assets/terrain/sandbox_ground_shape.tres" id="1_jpqm3"]
 [ext_resource type="Material" uid="uid://sf3gva5kicle" path="res://assets/shaders/unshaded_texture.tres" id="2_j6a8q"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://ckgoria5ndpkw" path="res://assets/units/forbit.tscn" id="3_egt6y"]
 [ext_resource type="Shader" path="res://assets/shaders/unshaded_texture.gdshader" id="4_vjnda"]
 [ext_resource type="Texture2D" uid="uid://bsuyapxadt4os" path="res://assets/textures/pure_red_checkers.png" id="5_yyh5n"]
+[ext_resource type="Script" path="res://scripts/camera/ThirdPersonCamera.cs" id="7_6ubrk"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_307up"]
 size = Vector3(200, 1, 200)
@@ -91,11 +92,23 @@ surface_material_override/0 = SubResource("ShaderMaterial_hxdb5")
 
 [node name="units" type="Node3D" parent="world"]
 
-[node name="Forbit" parent="world/units" node_paths=PackedStringArray("gameCamera") instance=ExtResource("3_egt6y")]
+[node name="thirdPersonCamera" type="Node3D" parent="world/units" node_paths=PackedStringArray("anchorNode", "camera", "cameraArm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.93549, 16.5819, -4.47044)
-gameCamera = NodePath("StandingBody/Camera3D")
+script = ExtResource("7_6ubrk")
+anchorNode = NodePath("../Forbit/StandingBody")
+camera = NodePath("SpringArm3D/Camera3D")
+cameraArm = NodePath("SpringArm3D")
+cammeraSensitivity = Vector2(1, 1)
+cameraArmOriginOffset = Vector3(0, 5, 0)
+cameraArmLength = 20.0
 
-[node name="Camera3D" type="Camera3D" parent="world/units/Forbit/StandingBody" index="1"]
-transform = Transform3D(1, 0, 0, 0, 0.944949, 0.327218, 0, -0.327218, 0.944949, 1.3867, 8.43324, 9.62959)
+[node name="SpringArm3D" type="SpringArm3D" parent="world/units/thirdPersonCamera"]
+collision_mask = 0
+spring_length = 200.0
+
+[node name="Camera3D" type="Camera3D" parent="world/units/thirdPersonCamera/SpringArm3D"]
+
+[node name="Forbit" parent="world/units" node_paths=PackedStringArray("gameCamera") instance=ExtResource("3_egt6y")]
+gameCamera = NodePath("../thirdPersonCamera/SpringArm3D/Camera3D")
 
 [editable path="world/units/Forbit"]
