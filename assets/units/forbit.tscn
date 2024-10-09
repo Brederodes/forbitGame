@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ckgoria5ndpkw"]
+[gd_scene load_steps=6 format=3 uid="uid://ckgoria5ndpkw"]
 
 [ext_resource type="Script" path="res://scripts/units/forbit/ForbitUnit.cs" id="1_ige3q"]
 [ext_resource type="PackedScene" uid="uid://d1nos47xvlndq" path="res://assets/models/frorbit_model/forbit_gamemodel.tscn" id="2_hk3tf"]
+[ext_resource type="Script" path="res://scripts/units/forbit/ForbitBody.cs" id="2_n4fup"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_6v85k"]
 radius = 1.0
@@ -12,33 +13,38 @@ radius = 1.0
 [node name="Forbit" type="Node3D" node_paths=PackedStringArray("forbitModel", "standingBody", "rollingBody")]
 script = ExtResource("1_ige3q")
 forbitModel = NodePath("ForbitGamemodel")
+defaultGravity = Vector3(0, -10, 0)
 standingBody = NodePath("StandingBody")
 rollingBody = NodePath("RollingBody")
 maxRunningSpeed = 15.0
 runningAcceleration = 50.0
 runningDecelerationFactor = 100.0
 runningTurningSpeed = 20.0
-jumpingSpeed = 30.0
+jumpingSpeed = 20.0
 
 [node name="StandingBody" type="CharacterBody3D" parent="."]
+physics_interpolation_mode = 1
 collision_layer = 3
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
-floor_max_angle = 1.0472
-floor_snap_length = 1.0
-platform_floor_layers = 4294901761
+floor_max_angle = 1.5708
+floor_snap_length = 3.0
+platform_floor_layers = 4294901763
 platform_wall_layers = 1
-safe_margin = 0.1
+script = ExtResource("2_n4fup")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StandingBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("SphereShape3D_6v85k")
 
 [node name="RollingBody" type="CharacterBody3D" parent="."]
+collision_layer = 3
+collision_mask = 3
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
+script = ExtResource("2_n4fup")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RollingBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

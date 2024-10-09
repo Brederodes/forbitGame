@@ -77,3 +77,7 @@ tongue={
 
 3d_physics/layer_1="ground"
 3d_physics/layer_2="forbit"
+
+[physics]
+
+3d/physics_engine="JoltPhysics3D"

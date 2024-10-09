@@ -1,11 +1,28 @@
-[gd_scene load_steps=5 format=3 uid="uid://cuxx5npi8dny5"]
+[gd_scene load_steps=11 format=3 uid="uid://cuxx5npi8dny5"]
 
 [ext_resource type="Shape3D" uid="uid://cew4300ctie1a" path="res://assets/terrain/sandbox_ground_shape.tres" id="1_jpqm3"]
 [ext_resource type="Material" uid="uid://sf3gva5kicle" path="res://assets/shaders/unshaded_texture.tres" id="2_j6a8q"]
+[ext_resource type="PackedScene" uid="uid://3s2qydmfalrg" path="res://assets/gravityFields/sphericalGravityField.tscn" id="3_45g06"]
 [ext_resource type="PackedScene" uid="uid://ckgoria5ndpkw" path="res://assets/units/forbit.tscn" id="3_egt6y"]
+[ext_resource type="Shader" path="res://assets/shaders/unshaded_texture.gdshader" id="4_vjnda"]
+[ext_resource type="Texture2D" uid="uid://bsuyapxadt4os" path="res://assets/textures/pure_red_checkers.png" id="5_yyh5n"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_307up"]
 size = Vector3(200, 1, 200)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cakle"]
+radius = 5.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_q235t"]
+radius = 5.0
+height = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hxdb5"]
+render_priority = 0
+shader = ExtResource("4_vjnda")
+shader_parameter/UVScale = 9.77
+shader_parameter/albedoGain = Vector3(-0.105, 0.5, 0.09)
+shader_parameter/sourceImage = ExtResource("5_yyh5n")
 
 [node name="sandbox_level" type="Node3D"]
 
@@ -48,10 +65,37 @@ mesh = SubResource("BoxMesh_307up")
 skeleton = NodePath("../../ground2")
 surface_material_override/0 = ExtResource("2_j6a8q")
 
+[node name="SphericalGravityField2" parent="world/terrain" instance=ExtResource("3_45g06")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.9818, 18.8582, 19.5578)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="world/terrain/SphericalGravityField2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="world/terrain/SphericalGravityField2/StaticBody3D"]
+shape = SubResource("SphereShape3D_cakle")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="world/terrain/SphericalGravityField2/StaticBody3D"]
+mesh = SubResource("SphereMesh_q235t")
+surface_material_override/0 = SubResource("ShaderMaterial_hxdb5")
+
+[node name="SphericalGravityField" parent="world/terrain" instance=ExtResource("3_45g06")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.71332, 11.8517, 18.8381)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="world/terrain/SphericalGravityField"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="world/terrain/SphericalGravityField/StaticBody3D"]
+shape = SubResource("SphereShape3D_cakle")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="world/terrain/SphericalGravityField/StaticBody3D"]
+mesh = SubResource("SphereMesh_q235t")
+surface_material_override/0 = SubResource("ShaderMaterial_hxdb5")
+
 [node name="units" type="Node3D" parent="world"]
 
 [node name="Forbit" parent="world/units" node_paths=PackedStringArray("gameCamera") instance=ExtResource("3_egt6y")]
-gameCamera = NodePath("../../Camera3D")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.93549, 16.5819, -4.47044)
+gameCamera = NodePath("StandingBody/Camera3D")
 
-[node name="Camera3D" type="Camera3D" parent="world"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6912, 5.32025, 9.88707)
+[node name="Camera3D" type="Camera3D" parent="world/units/Forbit/StandingBody" index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.944949, 0.327218, 0, -0.327218, 0.944949, 1.3867, 8.43324, 9.62959)
+
+[editable path="world/units/Forbit"]

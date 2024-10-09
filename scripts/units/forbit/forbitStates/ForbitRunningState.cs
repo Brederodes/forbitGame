@@ -47,29 +47,35 @@ public partial class ForbitRunningState : ForbitState
                 return;
             }
         }
+        ManageTurning(delta, frameInput.relativeAxisInput);
         if(!parentForbitUnit.StandingBody.IsOnFloor())
         {
             parentForbitUnit.ChangeToState(parentForbitUnit.jumpingState);
             return;
         }
-        ManageTurning(delta, frameInput.relativeAxisInput);
+        
         Basis presentCameraRotation = parentForbitUnit.CameraOrientation;
         //The minus sign in the Z is there because Godot's camera Z axis is inverted
         Vector3 ThreeDInput = new Vector3(-frameInput.relativeAxisInput.X, 0f, frameInput.relativeAxisInput.Y).Normalized();
+        if(presentCameraRotation.Y.Y * parentForbitUnit.PresentGravity.Y > 0)
+        {
+            ThreeDInput = -ThreeDInput;
+        }
         ThreeDInput = presentCameraRotation * ThreeDInput;
         Basis targetOrientation = new
         (
-            ThreeDInput.Cross(parentForbitUnit.PresentOrientation.Y),
-            parentForbitUnit.PresentOrientation.Y,
-            ThreeDInput.Cross(parentForbitUnit.PresentOrientation.Y).Cross(parentForbitUnit.PresentOrientation.Y)
+            ThreeDInput.Cross(-parentForbitUnit.PresentGravity),
+            -parentForbitUnit.PresentGravity,
+            ThreeDInput.Cross(-parentForbitUnit.PresentGravity).Cross(-parentForbitUnit.PresentGravity)
         );
+        targetOrientation = targetOrientation.Orthonormalized();
+        parentForbitUnit.StandingBody.UpDirection = targetOrientation.Y;
         //Adding the running velocity
         runningBody.Velocity += targetOrientation.Z * runningAcceleration * (float) delta;
         if(runningBody.Velocity.LengthSquared() > maxRunningSpeedSquared)
         {
             parentForbitUnit.StandingBody.Velocity -= parentForbitUnit.StandingBody.Velocity.Normalized() * parentForbitUnit.RunningDecelerationFactor * (float)delta;
         }
-        runningBody.MoveAndSlide();
     }
     void ManageTurning(double delta, Vector2 relativeAxisInput)
     {
@@ -79,9 +85,9 @@ public partial class ForbitRunningState : ForbitState
         ThreeDInput = presentCameraRotation * ThreeDInput;
         Basis targetOrientation = new
         (
-            ThreeDInput.Cross(parentForbitUnit.PresentOrientation.Y),
-            parentForbitUnit.PresentOrientation.Y,
-            ThreeDInput.Cross(parentForbitUnit.PresentOrientation.Y).Cross(parentForbitUnit.PresentOrientation.Y)
+            ThreeDInput.Cross(-parentForbitUnit.PresentGravity),
+            -parentForbitUnit.PresentGravity,
+            ThreeDInput.Cross(-parentForbitUnit.PresentGravity).Cross(-parentForbitUnit.PresentGravity)
         );
         targetOrientation = targetOrientation.Orthonormalized();
         parentForbitUnit.PresentOrientation = parentForbitUnit.PresentOrientation.Slerp(targetOrientation.Orthonormalized(), Math.Clamp(turningSpeed * (float)delta,0f,1f)).Orthonormalized();

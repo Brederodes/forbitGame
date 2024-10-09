@@ -23,7 +23,9 @@ public partial class ForbitStandingState : ForbitState
         if(frameInput.relativeAxisInput.LengthSquared() > 0.5f)
         {
             parentForbitUnit.ChangeToState(parentForbitUnit.runningState);
+            return;
         }
+        parentForbitUnit.StandingBody.Velocity = Vector3.Zero;
     }
     public override void StartState()
     {

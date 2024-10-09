@@ -29,4 +29,8 @@ public abstract partial class ForbitState
         parentForbitUnit.ForbitModel.GlobalPosition = parentForbitUnit.StandingBody.GlobalPosition;
         parentForbitUnit.ForbitModel.GlobalBasis = parentForbitUnit.PresentOrientation.Rotated(parentForbitUnit.PresentOrientation.Y, MathF.PI);
     }
+	public virtual ForbitBody GetActiveBody()
+	{
+		return parentForbitUnit.StandingBody;
+	}
 }

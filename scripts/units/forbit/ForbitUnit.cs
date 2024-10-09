@@ -1,5 +1,8 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
 
 public partial class ForbitUnit : Node3D
 {
@@ -44,19 +47,20 @@ public partial class ForbitUnit : Node3D
 	public ForbitStandingState standingState;
 	public ForbitJumpingState jumpingState;
 	public ForbitRollingState rollingState;
-	Vector3 presentGravity = new Vector3(0f, -5f, 0f);
+	List<GravityField> affectingGravityFields = new();
+	GravityField activeGravityField = null;
+	[Export] public Vector3 defaultGravity;
 	public Vector3 PresentGravity
 	{
 		get
 		{
-			return presentGravity;
+			if(activeGravityField == null)
+			{
+				return defaultGravity;
+			}
+			return activeGravityField.GetForbitGravity(this);
 		}
-		set
-		{
-			presentGravity = value;
-		}
-	}
-	public float gravityValue = 10f;
+	}	
 	Basis presentOrientation;
 	public Basis PresentOrientation
 	{
@@ -69,11 +73,17 @@ public partial class ForbitUnit : Node3D
 			presentOrientation = value;
 		}
 	}
-	[Export] CharacterBody3D standingBody;
-	public CharacterBody3D StandingBody { get => standingBody;}
-	[Export] CharacterBody3D rollingBody;
-	CharacterBody3D activeBody;
-	public CharacterBody3D RollingBody { get => rollingBody;}
+	[Export] ForbitBody standingBody;
+	public ForbitBody StandingBody { get => standingBody;}
+	[Export] ForbitBody rollingBody;
+	public ForbitBody ActiveBody
+	{
+		get
+		{
+			return presentState.GetActiveBody();
+		}
+	}
+	public ForbitBody RollingBody { get => rollingBody;}
 	[Export] float maxRunningSpeed;
 	public float MaxRunningSpeed { get => maxRunningSpeed;}
 	[Export] float runningAcceleration;
@@ -96,6 +106,8 @@ public partial class ForbitUnit : Node3D
 	public override void _Ready()
 	{
 		presentOrientation = StandingBody.Basis;
+		standingBody.parentForbit = this;
+		rollingBody.parentForbit = this;
 		ClearCycleInputs();
 		runningState = new(this);
 		standingState = new(this);
@@ -103,9 +115,38 @@ public partial class ForbitUnit : Node3D
 		rollingState = new(this);
 		presentState = standingState;
 		presentState.StartState();
-		activeBody = standingBody;
 	}
-
+	public void AddGravityField(GravityField newGF)
+	{
+		affectingGravityFields.Add(newGF);
+	}
+	/// <summary>
+	/// Attempts to set the active gravity field for the Forbit and returns if it was successful or not
+	/// </summary>
+	/// <param name="newActiveGF">
+	/// 	The new active gravity field
+	/// </param>
+	/// <returns>
+	/// 	Returns if the attempt was successful
+	/// </returns>
+	public bool AttemptToSetActiveGravityField(GravityField newActiveGF)
+	{
+		if(!affectingGravityFields.Contains(newActiveGF)) return false;
+		activeGravityField = newActiveGF;
+		return true;
+	}
+	public void RemoveGravityField(GravityField removedGF)
+	{
+		affectingGravityFields.Remove(removedGF);
+		if(removedGF == activeGravityField && affectingGravityFields.Count > 0)
+		{
+			activeGravityField = affectingGravityFields[0];
+		}
+		else
+		{
+			activeGravityField = null;
+		}
+	}
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
@@ -115,11 +156,11 @@ public partial class ForbitUnit : Node3D
     {
 		lastCycleDelta = delta;
         base._PhysicsProcess(delta);
+		SufferGravityEffect(delta);
 		HandleInput();
 		presentState.ActOnInput(delta, new ForbitFrameInput(axisInputThisCycle, pressedJumpThisCycle, pressedRollThisCycle, pressedTongueThisCycle));
 		ClearCycleInputs();
-		activeBody.MoveAndSlide();
-		SufferGravityEffect(delta);
+		ActiveBody.MoveAndSlide();
 		GD.Print("IS STANDINGBODY ON FLOOR: " + standingBody.IsOnFloor());
     }
     void HandleInput()
@@ -157,6 +198,9 @@ public partial class ForbitUnit : Node3D
 	}
 	void SufferGravityEffect(double delta)
     {
-        standingBody.Velocity += presentGravity * gravityValue * (float)delta;
+		GD.Print("GRAVITY: "  + PresentGravity);
+        standingBody.Velocity += PresentGravity * (float)delta;
+		standingBody.UpDirection = -PresentGravity.Normalized();
+		return;
     }
 }

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://3s2qydmfalrg"]
+
+[ext_resource type="Script" path="res://scripts/gravityField/SphericalGravityField.cs" id="1_pvmy2"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ptq85"]
+radius = 10.0
+
+[node name="SphericalGravityField" type="Area3D"]
+script = ExtResource("1_pvmy2")
+gravityValue = 50.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ptq85")
